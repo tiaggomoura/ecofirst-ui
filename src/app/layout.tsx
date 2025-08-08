@@ -3,6 +3,7 @@ import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import type { Metadata } from "next";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Ecofirst UI",
@@ -16,12 +17,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="bg-soft text-gray-900">
-        <div className="flex">
+      <body className="bg-soft text-gray-900 min-h-screen w-screen overflow-x-hidden flex flex-col">
+        <div className="flex flex-1">
           <Sidebar />
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full min-h-screen">
             <Header />
-            <main className="p-6">{children}</main>
+            <main className="flex-grow p-4 sm:p-6">{children}</main>
+            <Footer />
           </div>
         </div>
       </body>
