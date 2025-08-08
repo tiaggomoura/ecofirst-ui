@@ -1,9 +1,18 @@
-// src/components/Header.tsx
-export default function Header() {
+"use client";
+type HeaderProps = {
+  toggleSidebar: () => void;
+};
+
+export default function Header({ toggleSidebar }: HeaderProps) {
   return (
-    <header className="w-full h-16 bg-white shadow flex items-center justify-between px-6">
-      <h2 className="text-lg font-semibold text-gray-800">Dashboard</h2>
-      <div className="text-sm text-gray-600">Tiago ▼</div>
+    <header className="bg-blue-600 text-white p-4 flex items-center justify-between">
+      <button
+        onClick={toggleSidebar}
+        className="text-white focus:outline-none md:hidden"
+      >
+        ☰
+      </button>
+      <h1 className="text-lg font-semibold">Ecofirst</h1>
     </header>
   );
 }

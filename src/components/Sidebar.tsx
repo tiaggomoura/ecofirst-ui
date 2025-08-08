@@ -1,97 +1,59 @@
-// src/components/Sidebar.tsx
 "use client";
 
-import { JSX, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  FiHome,
-  FiPieChart,
-  FiCreditCard,
-  FiSettings,
-  FiPlusCircle,
-  FiList,
-} from "react-icons/fi";
+import { motion } from "framer-motion";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { menuItems } from "@/app/shared-types/menu-item";
 
-export default function Sidebar() {
-  const [open, setOpen] = useState(true);
-  const pathname = usePathname();
+type SidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
 
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
-    <aside
-      className={`bg-blue-900 text-white flex-shrink-0 p-4 ${
-        open ? "w-64" : "w-20"
-      } h-screen transition-all duration-300`}
-    >
-      <div className="flex items-center justify-between mb-6">
-        <h1 className={`text-xl font-bold ${!open && "hidden"}`}>Ecofirst</h1>
-        <button onClick={() => setOpen(!open)}>≡</button>
-      </div>
-
-      <nav className="space-y-4">
-        <SidebarItem
-          icon={<FiHome />}
-          label="Início"
-          href="/"
-          open={open}
-          active={pathname === "/"}
-        />
-        <SidebarItem
-          icon={<FiPlusCircle />}
-          label="Nova Transação"
-          href="/transactions/new"
-          open={open}
-          active={pathname === "/transactions/new"}
-        />
-        <SidebarItem
-          icon={<FiList />}
-          label="Transações"
-          href="/transactions/list"
-          open={open}
-          active={pathname.startsWith("/transactions/list")}
-        />
-        <SidebarItem
-          icon={<FiCreditCard />}
-          label="Cartões"
-          href="/cards"
-          open={open}
-          active={pathname.startsWith("/cards")}
-        />
-        <SidebarItem
-          icon={<FiSettings />}
-          label="Configurações"
-          href="/settings"
-          open={open}
-          active={pathname.startsWith("/settings")}
-        />
-      </nav>
-    </aside>
-  );
-}
-
-function SidebarItem({
-  icon,
-  label,
-  href,
-  open,
-  active,
-}: {
-  icon: JSX.Element;
-  label: string;
-  href: string;
-  open: boolean;
-  active: boolean;
-}) {
-  return (
-    <Link href={href}>
-      <div
-        className={`flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-blue-700 ${
-          active ? "bg-blue-800 font-semibold" : ""
-        }`}
+    <>
+      {/* MOBILE SIDEBAR */}
+      <motion.aside
+        initial={{ x: -300 }}
+        animate={{ x: isOpen ? 0 : -300 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="bg-blue-800 text-white w-64 h-screen fixed z-40 top-0 left-0 md:hidden"
       >
-        {icon}
-        {open && <span>{label}</span>}
-      </div>
-    </Link>
+        <div className="flex justify-end p-2">
+          <button onClick={onClose}>
+            <XMarkIcon className="w-6 h-6 text-white" />
+          </button>
+        </div>
+
+        <nav className="h-full p-4 space-y-4">
+          {menuItems.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              className="flex items-center gap-3 hover:text-blue-300 transition-colors"
+            >
+              <item.icon className="w-5 h-5" />
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </nav>
+      </motion.aside>
+
+      {/* DESKTOP SIDEBAR (sem animação) */}
+      <aside className="bg-blue-800 text-white w-64 h-screen hidden md:block">
+        <nav className="h-full p-4 space-y-4">
+          {menuItems.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              className="flex items-center gap-3 hover:text-blue-300 transition-colors"
+            >
+              <item.icon className="w-5 h-5" />
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </nav>
+      </aside>
+    </>
   );
 }

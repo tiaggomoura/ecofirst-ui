@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { TransactionType } from "@/app/shared-types/transaction-type.enum";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 interface Transaction {
   id: number;
@@ -76,7 +77,7 @@ export default function TransactionsPage() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
-      <h2 className="text-2xl font-bold mb-6">Transações</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Transações</h2>
 
       {/* Filtros */}
       <form
@@ -98,21 +99,21 @@ export default function TransactionsPage() {
           placeholder="Descrição"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="border border-gray-300 rounded p-2 w-full"
+          className="border border-gray-300 text-gray-800 rounded p-2 w-full"
         />
 
         <input
           type="date"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
-          className="border border-gray-300 rounded p-2 w-full"
+          className="border border-gray-300 text-gray-800 rounded p-2 w-full"
         />
 
         <input
           type="date"
           value={to}
           onChange={(e) => setTo(e.target.value)}
-          className="border border-gray-300 rounded p-2 w-full"
+          className="border border-gray-300 text-gray-800 rounded p-2 w-full"
         />
 
         <button
@@ -142,26 +143,26 @@ export default function TransactionsPage() {
             {transactions.length > 0 ? (
               transactions.map((t) => (
                 <tr key={t.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-2">
+                  <td className="px-4 py-2 text-gray-800">
                     {new Date(t.date).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2">{t.description}</td>
-                  <td className="px-4 py-2">{t.type}</td>
-                  <td className="px-4 py-2">R$ {t.amount.toFixed(2)}</td>
-                  <td className="px-4 py-2">{t.categoryName}</td>
-                  <td className="px-4 py-2">{t.paymentMethodName}</td>
-                  <td className="px-4 py-2 text-center space-x-2">
+                  <td className="px-4 py-2 text-gray-800">{t.description}</td>
+                  <td className="px-4 py-2 text-gray-800">{t.type}</td>
+                  <td className="px-4 py-2 text-gray-800">R$ {t.amount.toFixed(2)}</td>
+                  <td className="px-4 py-2 text-gray-800">{t.categoryName}</td>
+                  <td className="px-4 py-2 text-gray-800">{t.paymentMethodName}</td>
+                  <td className="px-4 py-2 text-center space-x-2 flex justify-center">
                     <Link
                       href={`/transactions/${t.id}`}
-                      className="text-blue-600 hover:underline"
+                      className="text-blue-600 hover:text-blue-800"
                     >
-                      Editar
+                      <PencilSquareIcon className="h-5 w-5" />
                     </Link>
                     <button
                       onClick={() => handleDelete(t.id)}
-                      className="text-red-600 hover:underline"
+                      className="text-red-600 hover:text-red-800"
                     >
-                      Deletar
+                      <TrashIcon className="h-5 w-5" />
                     </button>
                   </td>
                 </tr>
