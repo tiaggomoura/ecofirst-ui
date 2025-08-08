@@ -9,7 +9,7 @@ import {
 export const menuItems = [
   {
     label: "Dashboard",
-    href: "#",
+    href: "/",
     icon: HomeIcon,
   },
   {
