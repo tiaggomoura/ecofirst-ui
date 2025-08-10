@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { TransactionType } from "@/app/shared-types/transaction-type.enum";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { TransactionStatus } from "@/app/shared-types/transaction-status.enum";
 
 interface Transaction {
   id: number;
@@ -11,13 +12,17 @@ interface Transaction {
   amount: number;
   date: string;
   type: TransactionType;
+  status: TransactionStatus;
   categoryName: string;
   paymentMethodName: string;
+  installmentTotal?: number;
+  installmentNumber?: number;
 }
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [type, setType] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
   const [description, setDescription] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -26,14 +31,18 @@ export default function TransactionsPage() {
 
   const fetchTransactions = async () => {
     const params = new URLSearchParams();
-    if (type) params.append("type", type);
-    if (description) params.append("description", description);
-    if (from) params.append("from", from);
-    if (to) params.append("to", to);
-    params.append("page", String(page));
+    if (type) params.set("type", type);
+    if (status) params.set("status", status);
+    if (description) params.set("description", description.trim());
+    if (from) params.set("from", from);
+    if (to) params.set("to", to);
+    params.set("page", String(page));
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/transactions/paginated?${params}`
+      `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/transactions/paginated?${params.toString()}`,
+      { cache: "no-store" },
     );
     const data = await res.json();
 
@@ -43,7 +52,7 @@ export default function TransactionsPage() {
 
   useEffect(() => {
     fetchTransactions();
-  }, [type, description, from, to, page]);
+  }, [type, status, description, from, to, page]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Deseja realmente deletar esta transação?")) return;
@@ -52,7 +61,7 @@ export default function TransactionsPage() {
       `${process.env.NEXT_PUBLIC_API_URL}/transactions/${id}`,
       {
         method: "DELETE",
-      }
+      },
     );
 
     if (res.ok) fetchTransactions();
@@ -86,12 +95,29 @@ export default function TransactionsPage() {
       >
         <select
           value={type}
-          onChange={(e) => setType(e.target.value)}
+          onChange={(e) => {
+            setType(e.target.value);
+            setPage(1);
+          }}
           className="border border-gray-300 rounded p-2 text-gray-800 bg-white w-full"
         >
           <option value="">Todos os tipos</option>
           <option value="RECEITA">Receita</option>
           <option value="DESPESA">Despesa</option>
+        </select>
+
+        <select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+          className="border border-gray-300 text-gray-800 rounded-lg px-3 py-2"
+        >
+          <option value="">Todos</option>
+          <option value="PENDENTE">PENDENTE</option>
+          <option value="PAGO">PAGO</option>
+          <option value="RECEBIDO">RECEBIDO</option>
         </select>
 
         <input
@@ -133,6 +159,8 @@ export default function TransactionsPage() {
               <th className="px-4 py-2">Data</th>
               <th className="px-4 py-2">Descrição</th>
               <th className="px-4 py-2">Tipo</th>
+              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Parc</th>
               <th className="px-4 py-2">Valor</th>
               <th className="px-4 py-2">Categoria</th>
               <th className="px-4 py-2">Pagamento</th>
@@ -148,12 +176,37 @@ export default function TransactionsPage() {
                   </td>
                   <td className="px-4 py-2 text-gray-800">{t.description}</td>
                   <td className="px-4 py-2 text-gray-800">{t.type}</td>
-                  <td className="px-4 py-2 text-gray-800">R$ {t.amount.toFixed(2)}</td>
+                  <td className="px-4 py-2">
+                    {t.status === "PENDENTE" && (
+                      <span className="text-yellow-600">PENDENTE</span>
+                    )}
+                    {t.status === "PAGO" && (
+                      <span className="text-green-600">PAGO</span>
+                    )}
+                    {t.status === "RECEBIDO" && (
+                      <span className="text-blue-600">RECEBIDO</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-gray-800">
+                    {t.installmentNumber && t.installmentTotal
+                      ? `${t.installmentNumber}/${t.installmentTotal}`
+                      : "—"}
+                  </td>
+
+                  <td className="px-4 py-2 text-gray-800">
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(t.amount)}
+                  </td>
+
                   <td className="px-4 py-2 text-gray-800">{t.categoryName}</td>
-                  <td className="px-4 py-2 text-gray-800">{t.paymentMethodName}</td>
+                  <td className="px-4 py-2 text-gray-800">
+                    {t.paymentMethodName}
+                  </td>
                   <td className="px-4 py-2 text-center space-x-2 flex justify-center">
                     <Link
-                      href={`/transactions/${t.id}`}
+                      href={`/transactions/edit/${t.id}`}
                       className="text-blue-600 hover:text-blue-800"
                     >
                       <PencilSquareIcon className="h-5 w-5" />
