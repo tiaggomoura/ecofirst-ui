@@ -42,7 +42,7 @@ export default function TransactionsPage() {
       `${
         process.env.NEXT_PUBLIC_API_URL
       }/transactions/paginated?${params.toString()}`,
-      { cache: "no-store" },
+      { cache: "no-store" }
     );
     const data = await res.json();
 
@@ -61,7 +61,7 @@ export default function TransactionsPage() {
       `${process.env.NEXT_PUBLIC_API_URL}/transactions/${id}`,
       {
         method: "DELETE",
-      },
+      }
     );
 
     if (res.ok) fetchTransactions();
@@ -85,7 +85,7 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-6">
+    <div className="w-full max-w-7xl mx-auto px-4 py-6 rounded-2xl border border-gray-200 bg-white shadow-sm">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Transações</h2>
 
       {/* Filtros */}
