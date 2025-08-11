@@ -42,7 +42,7 @@ export default function TransactionsPage() {
       `${
         process.env.NEXT_PUBLIC_API_URL
       }/transactions/paginated?${params.toString()}`,
-      { cache: "no-store" }
+      { cache: "no-store" },
     );
     const data = await res.json();
 
@@ -61,7 +61,7 @@ export default function TransactionsPage() {
       `${process.env.NEXT_PUBLIC_API_URL}/transactions/${id}`,
       {
         method: "DELETE",
-      }
+      },
     );
 
     if (res.ok) fetchTransactions();

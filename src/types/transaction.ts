@@ -8,8 +8,24 @@ export interface TransactionDTO {
   date: string; // ISO
   type: TransactionType;
   status: TransactionStatus;
-  categoryName: string;
-  paymentMethodName: string;
+  categoryId: number;
+  paymentMethodId: number;
+  seriesId: string | null;
   installmentNumber: number | null;
   installmentTotal: number | null;
+  createdAt: string; // ISO 8601
+  updatedAt: string; // ISO 8601
+  category: CategoryDTO;
+  paymentMethod: PaymentMethodDTO;
+}
+
+export interface CategoryDTO {
+  id: number;
+  name: string;
+  type: TransactionType;
+}
+
+export interface PaymentMethodDTO {
+  id: number;
+  name: string;
 }

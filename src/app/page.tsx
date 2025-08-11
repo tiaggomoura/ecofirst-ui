@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { MonthNavLight } from "@/components/MonthNavLight";
@@ -9,9 +10,9 @@ import { ExpensesByCategoryChart } from "@/components/charts/ExpensesByCategoryC
 import { IncomeByCategoryChart } from "@/components/charts/IncomeByCategoryChart";
 import { fetchMonthlyTransactions } from "@/services/transactionsApi";
 import { TransactionDTO } from "@/types/transaction";
+import { TransactionListResponseDTO } from "@/types/transaction-list.dto";
 import { formatBRL } from "@/utils/currency";
 import { addMonths, endOfMonth, startOfMonth } from "@/utils/date";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 export default function MonthlyDashboardPage() {
@@ -26,17 +27,24 @@ export default function MonthlyDashboardPage() {
     setCursor(startOfMonth(new Date()));
   }, [mounted]);
 
-  const [items, setItems] = useState<TransactionDTO[]>([]);
+  const [pageData, setPageData] = useState<TransactionListResponseDTO | null>(null);  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Datas do filtro (seguras quando cursor é null)
   const fromISO = useMemo(
-    () => (cursor ? startOfMonth(cursor).toISOString() : ""),
+    () =>
+      cursor
+        ? startOfMonth(cursor).toISOString().slice(0, 10) // só AAAA-MM-DD
+        : "",
     [cursor]
   );
+
   const toISO = useMemo(
-    () => (cursor ? endOfMonth(cursor).toISOString() : ""),
+    () =>
+      cursor
+        ? endOfMonth(cursor).toISOString().slice(0, 10) // só AAAA-MM-DD
+        : "",
     [cursor]
   );
 
@@ -49,15 +57,9 @@ export default function MonthlyDashboardPage() {
       setError(null);
       try {
         const data = await fetchMonthlyTransactions(fromISO, toISO);
-        if (alive) setItems(data);
-      } catch (e: unknown) {
-        if (alive) {
-          const message =
-            typeof e === "object" && e !== null && "message" in e
-              ? String((e as { message?: unknown }).message)
-              : "Erro ao buscar dados";
-          setError(message);
-        }
+        if (alive) setPageData(data);
+      } catch (e: any) {
+        if (alive) setError(e?.message ?? "Erro ao buscar dados");
       } finally {
         if (alive) setLoading(false);
       }
@@ -66,6 +68,8 @@ export default function MonthlyDashboardPage() {
       alive = false;
     };
   }, [cursor, fromISO, toISO]);
+
+   const items: TransactionDTO[] = pageData?.items ?? [];
 
   // Agregações SEMPRE chamadas (não condicionais)
   const {
@@ -96,7 +100,7 @@ export default function MonthlyDashboardPage() {
     const byCategory = (arr: TransactionDTO[]) => {
       const map = new Map<string, number>();
       for (const t of arr) {
-        const key = t.categoryName || "Sem categoria";
+        const key = t.category.name || "Sem categoria";
         map.set(key, (map.get(key) ?? 0) + Number(t.amount ?? 0));
       }
       return Array.from(map.entries()).map(([name, value]) => ({
@@ -242,4 +246,12 @@ export default function MonthlyDashboardPage() {
       )}
     </div>
   );
+}
+
+// Helper bem simples para gerar [from, to] a partir de "YYYY-MM"
+function getMonthRange(period: string) {
+  const [y, m] = period.split("-").map((v) => parseInt(v, 10));
+  const from = new Date(Date.UTC(y, m - 1, 1, 0, 0, 0, 0));
+  const to = new Date(Date.UTC(y, m, 0, 23, 59, 59, 999)); // último dia do mês
+  return { from, to };
 }

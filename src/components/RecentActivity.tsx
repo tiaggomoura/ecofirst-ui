@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// components/RecentActivity.tsx
 "use client";
 
 import { formatBRL } from "@/utils/currency";
@@ -8,7 +10,7 @@ import { StatusBadgeLight } from "./StatusBadgeLight";
 type Props = {
   items: TransactionDTO[];
   title?: string;
-  hrefAll?: string; // link "Ver transação"
+  hrefAll?: string;
 };
 
 function AmountPill({
@@ -39,7 +41,6 @@ export function RecentActivity({
 }: Props) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3">
         <h3 className="text-sm font-medium text-gray-800">{title}</h3>
         <a
@@ -51,14 +52,13 @@ export function RecentActivity({
         </a>
       </div>
 
-      {/* List */}
       <div className="divide-y divide-gray-200">
         {items.map((t) => (
           <div
             key={t.id}
             className="grid grid-cols-1 gap-3 px-4 py-3 sm:grid-cols-12 sm:items-center"
           >
-            {/* Col 1 – ícone + descrição + data */}
+            {/* Col 1 – descrição + data */}
             <div className="sm:col-span-5 flex items-start gap-3">
               <div className="mt-1 inline-flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm">
                 <ArrowRight className="h-4 w-4 text-gray-500" />
@@ -71,16 +71,20 @@ export function RecentActivity({
               </div>
             </div>
 
-            {/* Col 2 – pill de valor + categoria + status */}
+            {/* Col 2 – pill + categoria + status */}
             <div className="sm:col-span-4 flex flex-col gap-1">
               <AmountPill value={Number(t.amount)} type={t.type} />
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">{t.categoryName}</span>
+                <span className="text-sm text-gray-700">
+                  {t?.category?.name ??
+                    (t as any)?.categoryName ??
+                    "Sem categoria"}
+                </span>
                 <StatusBadgeLight status={t.status} />
               </div>
             </div>
 
-            {/* Col 3 – valor alinhado à direita (resumo) */}
+            {/* Col 3 – valor à direita */}
             <div className="sm:col-span-3 flex sm:justify-end">
               <div className="text-sm font-semibold text-gray-900">
                 {t.type === "DESPESA" ? "-" : "+"} {formatBRL(Number(t.amount))}

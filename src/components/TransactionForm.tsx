@@ -64,12 +64,12 @@ export function TransactionForm({
       .then((res) => res.json())
       .then(setPaymentMethods)
       .catch((err) =>
-        console.error("Erro ao buscar métodos de pagamento:", err)
+        console.error("Erro ao buscar métodos de pagamento:", err),
       );
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
