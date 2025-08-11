@@ -12,7 +12,7 @@ export async function fetchMonthlyTransactions(
   url.searchParams.set("from", fromISO);
   url.searchParams.set("to", toISO);
   url.searchParams.set("page", "1");
-  url.searchParams.set("limit", "10");
+  url.searchParams.set("limit", "20");
 
   const res = await fetch(url.toString(), { cache: "no-store" });
   if (!res.ok) throw new Error("Falha ao carregar transações do mês");
