@@ -45,3 +45,27 @@ export async function fetchMonthlyTransactions(
     pageSize: Number(body?.pageSize ?? items.length),
   };
 }
+
+export async function settleTransaction(id: number) {
+  const url = API_BASE
+    ? `${API_BASE}/transactions/${id}/settle`
+    : `/transactions/${id}/settle`; 
+
+  const res = await fetch(url, { method: "PATCH", credentials: "include" });
+  if (!res.ok && res.status !== 204) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Falha ao liquidar a transação #${id}`);
+  }
+}
+
+export async function cancelTransaction(id: number) {
+  const url = API_BASE
+    ? `${API_BASE}/transactions/${id}/cancel`
+    : `/transactions/${id}/cancel`;
+
+  const res = await fetch(url, { method: "PATCH", credentials: "include" });
+  if (!res.ok && res.status !== 204) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Falha ao cancelar a transação #${id}`);
+  }
+}

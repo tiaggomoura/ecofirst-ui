@@ -1,7 +1,17 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  allowedDevOrigins: [
+    "192.168.100.11", // seu IP local
+  ],
 
-const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: "/:path*", // captura qualquer rota (exceto assets do Next)
+        destination: "http://192.168.100.11:3000/:path*", // API Nest
+      },
+    ];
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

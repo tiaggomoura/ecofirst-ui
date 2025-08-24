@@ -95,7 +95,7 @@ export default function MonthlyDashboardPage() {
     const net = totalIncome - totalExpense;
 
     const pendingValue = sum(list.filter((i) => i.status === "PENDENTE"));
-    const overdueValue = sum(list.filter((i) => i.status === "ATRASADO"));
+    const overdueValue = sum(list.filter((i) => i.status === "CANCELADO"));
 
     const byCategory = (arr: TransactionDTO[]) => {
       const map = new Map<string, number>();
@@ -164,6 +164,18 @@ export default function MonthlyDashboardPage() {
     });
     window.location.href = `/transactions/new?${params.toString()}`;
   };
+
+  // Recarrega dados (usado após resolver/cancelar)
+  async function reload() {
+    if (!fromISO || !toISO) return;
+    try {
+      setLoading(true);
+      const data = await fetchMonthlyTransactions(fromISO, toISO);
+      setPageData(data);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // ===== Render =====
   return (
@@ -240,7 +252,7 @@ export default function MonthlyDashboardPage() {
 
           {/* Lista de atividade */}
           <div className="mt-6">
-            <RecentActivity items={items} />
+            <RecentActivity items={items} onChanged={reload}/>
           </div>
         </>
       )}

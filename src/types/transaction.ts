@@ -1,5 +1,5 @@
 export type TransactionType = "RECEITA" | "DESPESA";
-export type TransactionStatus = "PENDENTE" | "PAGO" | "RECEBIDO" | "ATRASADO";
+export type TransactionStatus = "PENDENTE" | "PAGO" | "RECEBIDO" | "CANCELADO";
 
 export interface TransactionDTO {
   id: number;
