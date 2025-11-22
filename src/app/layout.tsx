@@ -1,4 +1,5 @@
 // app/layout.tsx
+import { Toaster } from "sonner";
 import "./globals.css";
 import AppLayout from "@/components/AppLayout";
 
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body>
         <AppLayout>{children}</AppLayout>
+         <Toaster richColors position="top-right" />
       </body>
     </html>
   );

@@ -2,7 +2,7 @@
 import { TransactionDTO } from "@/types/transaction";
 import { TransactionListResponseDTO } from "@/types/transaction-list.dto";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 export async function fetchMonthlyTransactions(
   fromISO: string,
@@ -47,11 +47,9 @@ export async function fetchMonthlyTransactions(
 }
 
 export async function settleTransaction(id: number) {
-  const url = API_BASE
-    ? `${API_BASE}/transactions/${id}/settle`
-    : `/transactions/${id}/settle`; 
+  const url = `${API_BASE}/transactions/${id}/settle`;
 
-  const res = await fetch(url, { method: "PATCH", credentials: "include" });
+  const res = await fetch(url, { method: "PATCH" });
   if (!res.ok && res.status !== 204) {
     const text = await res.text().catch(() => "");
     throw new Error(text || `Falha ao liquidar a transação #${id}`);
@@ -63,7 +61,7 @@ export async function cancelTransaction(id: number) {
     ? `${API_BASE}/transactions/${id}/cancel`
     : `/transactions/${id}/cancel`;
 
-  const res = await fetch(url, { method: "PATCH", credentials: "include" });
+  const res = await fetch(url, { method: "PATCH" });
   if (!res.ok && res.status !== 204) {
     const text = await res.text().catch(() => "");
     throw new Error(text || `Falha ao cancelar a transação #${id}`);

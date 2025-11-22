@@ -12,6 +12,7 @@ import {
   settleTransaction,
   cancelTransaction,
 } from "@/services/transactionsApi";
+import { toast } from "sonner";
 
 type Props = {
   items: TransactionDTO[];
@@ -200,9 +201,10 @@ function RecentActivityItemRow({
     try {
       setLoading(true);
       await settleTransaction(t.id);
+      toast.success("Transação resolvida com sucesso!");
       onChanged?.();
     } catch (e: any) {
-      alert(e?.message ?? "Erro ao resolver transação.");
+      toast.error(e?.message ?? "Erro ao resolver transação.");
     } finally {
       setLoading(false);
     }
@@ -211,9 +213,10 @@ function RecentActivityItemRow({
     try {
       setLoading(true);
       await cancelTransaction(t.id); // endpoint no back em breve
+      toast.success("Transação cancelada com sucesso!");
       onChanged?.();
     } catch (e: any) {
-      alert(e?.message ?? "Erro ao cancelar transação.");
+      toast.error(e?.message ?? "Erro ao cancelar transação.");
     } finally {
       setLoading(false);
     }
