@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TransactionType } from "@/app/shared-types/transaction-type.enum";
+import { authFetch, buildApiUrl } from "@/lib/api";
 
 interface TransactionFormProps {
   transactionId?: number;
@@ -46,7 +47,6 @@ export function TransactionForm({
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   // =========================
   // NOVO: controles de parcelas
@@ -55,12 +55,12 @@ export function TransactionForm({
   const [distributeTotal, setDistributeTotal] = useState<boolean>(false);
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/categories`)
+    authFetch(buildApiUrl("/categories"))
       .then((res) => res.json())
       .then(setCategories)
       .catch((err) => console.error("Erro ao buscar categorias:", err));
 
-    fetch(`${apiBaseUrl}/payment-methods`)
+    authFetch(buildApiUrl("/payment-methods"))
       .then((res) => res.json())
       .then(setPaymentMethods)
       .catch((err) =>
@@ -163,10 +163,10 @@ export function TransactionForm({
 
     const method = transactionId ? "PUT" : "POST";
     const url = transactionId
-      ? `${apiBaseUrl}/transactions/${transactionId}`
-      : `${apiBaseUrl}/transactions`;
+      ? buildApiUrl(`/transactions/${transactionId}`)
+      : buildApiUrl("/transactions");
 
-    const res = await fetch(url, {
+    const res = await authFetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

@@ -6,20 +6,20 @@ import {
   TransactionFormData,
   TransactionForm,
 } from "@/components/TransactionForm";
+import { authFetch, buildApiUrl } from "@/lib/api";
 
 export default function EditTransactionPage() {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<Partial<TransactionFormData> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   useEffect(() => {
     if (!id) return;
 
     const fetchTransaction = async () => {
       try {
-        const res = await fetch(`${apiBaseUrl}/transactions/${id}`);
+        const res = await authFetch(buildApiUrl(`/transactions/${id}`));
         const data = await res.json();
 
         if (!res.ok) {

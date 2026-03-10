@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TransactionDTO } from "@/types/transaction";
 import { TransactionListResponseDTO } from "@/types/transaction-list.dto";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+import { authFetch, buildApiUrl } from "@/lib/api";
 
 export async function fetchMonthlyTransactions(
   fromISO: string,
   toISO: string
 ): Promise<TransactionListResponseDTO> {
-  const url = new URL(`${API_BASE}/transactions/recent-activity`);
+  const url = new URL(buildApiUrl("/transactions/recent-activity"));
   url.searchParams.set("from", fromISO);
   url.searchParams.set("to", toISO);
   url.searchParams.set("page", "1");
   url.searchParams.set("limit", "20");
 
-  const res = await fetch(url.toString(), { cache: "no-store" });
+  const res = await authFetch(url.toString(), { cache: "no-store" });
   if (!res.ok) throw new Error("Falha ao carregar transações do mês");
 
   const body = await res.json();
@@ -47,9 +46,9 @@ export async function fetchMonthlyTransactions(
 }
 
 export async function settleTransaction(id: number) {
-  const url = `${API_BASE}/transactions/${id}/settle`;
+  const url = buildApiUrl(`/transactions/${id}/settle`);
 
-  const res = await fetch(url, { method: "PATCH" });
+  const res = await authFetch(url, { method: "PATCH" });
   if (!res.ok && res.status !== 204) {
     const text = await res.text().catch(() => "");
     throw new Error(text || `Falha ao liquidar a transação #${id}`);
@@ -57,11 +56,9 @@ export async function settleTransaction(id: number) {
 }
 
 export async function cancelTransaction(id: number) {
-  const url = API_BASE
-    ? `${API_BASE}/transactions/${id}/cancel`
-    : `/transactions/${id}/cancel`;
+  const url = buildApiUrl(`/transactions/${id}/cancel`);
 
-  const res = await fetch(url, { method: "PATCH" });
+  const res = await authFetch(url, { method: "PATCH" });
   if (!res.ok && res.status !== 204) {
     const text = await res.text().catch(() => "");
     throw new Error(text || `Falha ao cancelar a transação #${id}`);

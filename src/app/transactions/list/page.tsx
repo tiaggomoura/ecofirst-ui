@@ -5,6 +5,7 @@ import Link from "next/link";
 import { TransactionType } from "@/app/shared-types/transaction-type.enum";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { TransactionStatus } from "@/app/shared-types/transaction-status.enum";
+import { authFetch, buildApiUrl } from "@/lib/api";
 
 interface Transaction {
   id: number;
@@ -38,10 +39,8 @@ export default function TransactionsPage() {
     if (to) params.set("to", to);
     params.set("page", String(page));
 
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/transactions/paginated?${params.toString()}`,
+    const res = await authFetch(
+      `${buildApiUrl("/transactions/paginated")}?${params.toString()}`,
       { cache: "no-store" },
     );
     const data = await res.json();
@@ -57,12 +56,9 @@ export default function TransactionsPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Deseja realmente deletar esta transação?")) return;
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/transactions/${id}`,
-      {
-        method: "DELETE",
-      },
-    );
+    const res = await authFetch(buildApiUrl(`/transactions/${id}`), {
+      method: "DELETE",
+    });
 
     if (res.ok) fetchTransactions();
   };

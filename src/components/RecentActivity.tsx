@@ -290,7 +290,7 @@ function RecentActivityItemRow({
 export function RecentActivity({
   items,
   title = "Atividade recente",
-  hrefAll = "/transactions",
+  hrefAll = "/transactions/list",
   onChanged,
 }: Props) {
   return (
